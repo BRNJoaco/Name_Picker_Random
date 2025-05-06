@@ -43,106 +43,119 @@
 </div>
 
 <script>
-  const canvas = document.getElementById("ruleta");
-  const ctx = canvas.getContext("2d");
-  let nombres = [];
-  let anguloInicio = 0;
-  let girando = false;
-
-  function agregarNombre() {
-    const input = document.getElementById("nombre");
-    const nombre = input.value.trim();
-    if (nombre && !nombres.includes(nombre)) {
-      nombres.push(nombre);
-      input.value = '';
-      dibujarRuleta();
-    }
-  }
-
-  function reiniciar() {
-    nombres = [];
-    dibujarRuleta();
-  }
-
-  function dibujarRuleta() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (nombres.length === 0) return;
-
-    const numSectores = nombres.length;
-    const anguloPorSector = 2 * Math.PI / numSectores;
-
-    for (let i = 0; i < numSectores; i++) {
-      const angulo = anguloInicio + i * anguloPorSector;
-      ctx.beginPath();
-      ctx.moveTo(200, 200);
-      ctx.arc(200, 200, 200, angulo, angulo + anguloPorSector);
-      ctx.fillStyle = `hsl(${i * 360 / numSectores}, 70%, 60%)`;
-      ctx.fill();
-      ctx.stroke();
-
-      // Texto
-      ctx.save();
-      ctx.translate(200, 200);
-      ctx.rotate(angulo + anguloPorSector / 2);
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#000";
-      ctx.font = "16px Arial";
-      ctx.fillText(nombres[i], 180, 5);
-      ctx.restore();
-    }
-
-    // Flecha
-    ctx.beginPath();
-    ctx.moveTo(200, 0);
-    ctx.lineTo(190, 20);
-    ctx.lineTo(210, 20);
-    ctx.closePath();
-    ctx.fillStyle = "#000";
-    ctx.fill();
-  }
-
-  function girarRuleta() {
-    if (girando || nombres.length === 0) return;
-    girando = true;
-
-    // Elegimos un índice aleatorio del ganador
-    const ganadorIndex = Math.floor(Math.random() * nombres.length);
-    const gradosPorSector = 360 / nombres.length;
-    const offset = gradosPorSector / 2;
-    const rotacionFinal = 360 * 5 + (360 - (ganadorIndex * gradosPorSector + offset));
-
-    let rotacion = 0;
-    const duracion = 4000;
-    const inicio = performance.now();
-
-    function animar(tiempo) {
-      const progreso = Math.min((tiempo - inicio) / duracion, 1);
-      rotacion = rotacionFinal * easeOutCubic(progreso);
-      anguloInicio = (rotacion * Math.PI / 180) % (2 * Math.PI);
-      dibujarRuleta();
-
-      if (progreso < 1) {
-        requestAnimationFrame(animar);
-      } else {
-        setTimeout(() => {
-          alert(`🎉 Ganador: ${nombres[ganadorIndex]} 🎉`);
-          nombres.splice(ganadorIndex, 1);
-          anguloInicio = 0;
-          girando = false;
-          dibujarRuleta();
-        }, 300);
+    const canvas = document.getElementById("ruleta");
+    const ctx = canvas.getContext("2d");
+    let nombres = [];
+    let anguloInicio = 0;
+    let girando = false;
+  
+    // Orden oculto predeterminado (puedes cambiarlo)
+    const ordenOculto = ["Carla", "Ana", "Beto", "Luis"];
+    let ordenActual = 0;
+  
+    function agregarNombre() {
+      const input = document.getElementById("nombre");
+      const nombre = input.value.trim();
+      if (nombre && !nombres.includes(nombre)) {
+        nombres.push(nombre);
+        input.value = '';
+        dibujarRuleta();
       }
     }
-
-    requestAnimationFrame(animar);
-  }
-
-  function easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
-  }
-
-  dibujarRuleta();
-</script>
+  
+    function reiniciar() {
+      nombres = [];
+      ordenActual = 0;
+      dibujarRuleta();
+    }
+  
+    function dibujarRuleta() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (nombres.length === 0) return;
+  
+      const numSectores = nombres.length;
+      const anguloPorSector = 2 * Math.PI / numSectores;
+  
+      for (let i = 0; i < numSectores; i++) {
+        const angulo = anguloInicio + i * anguloPorSector;
+        ctx.beginPath();
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 200, angulo, angulo + anguloPorSector);
+        ctx.fillStyle = `hsl(${i * 360 / numSectores}, 70%, 60%)`;
+        ctx.fill();
+        ctx.stroke();
+  
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(angulo + anguloPorSector / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#000";
+        ctx.font = "16px Arial";
+        ctx.fillText(nombres[i], 180, 5);
+        ctx.restore();
+      }
+  
+      ctx.beginPath();
+      ctx.moveTo(200, 0);
+      ctx.lineTo(190, 20);
+      ctx.lineTo(210, 20);
+      ctx.closePath();
+      ctx.fillStyle = "#000";
+      ctx.fill();
+    }
+  
+    function girarRuleta() {
+      if (girando || nombres.length === 0 || ordenActual >= ordenOculto.length) return;
+  
+      const ganadorNombre = ordenOculto[ordenActual];
+      const ganadorIndex = nombres.indexOf(ganadorNombre);
+  
+      if (ganadorIndex === -1) {
+        alert(`❌ El siguiente en la lista oculta es "${ganadorNombre}", pero no está en la ruleta.`);
+        return;
+      }
+  
+      girando = true;
+  
+      const gradosPorSector = 360 / nombres.length;
+      const offset = gradosPorSector / 2;
+      const rotacionFinal = 360 * 5 + (360 - (ganadorIndex * gradosPorSector + offset));
+  
+      let rotacion = 0;
+      const duracion = 4000;
+      const inicio = performance.now();
+  
+      function animar(tiempo) {
+        const progreso = Math.min((tiempo - inicio) / duracion, 1);
+        rotacion = rotacionFinal * easeOutCubic(progreso);
+        anguloInicio = (rotacion * Math.PI / 180) % (2 * Math.PI);
+        dibujarRuleta();
+  
+        if (progreso < 1) {
+          requestAnimationFrame(animar);
+        } else {
+          setTimeout(() => {
+            alert(`🎉 Ganador: ${ganadorNombre} 🎉`);
+            nombres.splice(ganadorIndex, 1);
+            ordenActual++;
+            anguloInicio = 0;
+            girando = false;
+            dibujarRuleta();
+          }, 300);
+        }
+      }
+  
+      requestAnimationFrame(animar);
+    }
+  
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+  
+    dibujarRuleta();
+  </script>
+  
+  
 
 </body>
 </html>
