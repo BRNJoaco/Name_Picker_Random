@@ -1,54 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Ruleta Familiar</title>
+  <meta charset="UTF-8">
+  <title>Ruleta de Nombres</title>
   <style>
-    #wheel {
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      border: 5px solid black;
-      margin: 50px auto;
-      background: conic-gradient(
-        red 0deg 60deg,
-        yellow 60deg 120deg,
-        blue 120deg 180deg,
-        green 180deg 240deg,
-        orange 240deg 300deg,
-        purple 300deg 360deg
-      );
-      transition: transform 4s ease-out;
-    }
-
-    #spin {
+    canvas {
       display: block;
       margin: 20px auto;
+      background: #f0f0f0;
+      border: 5px solid #333;
+      border-radius: 50%;
+    }
+    #formulario, #spinBtn {
+      text-align: center;
+      margin: 10px;
+    }
+    input[type="text"] {
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
       padding: 10px 20px;
-      font-size: 18px;
+      font-size: 16px;
+      margin: 5px;
     }
   </style>
 </head>
 <body>
-  <h2 style="text-align:center;">🎉 ¡Gira la Ruleta Familiar! 🎉</h2>
-  <div id="wheel"></div>
-  <button id="spin">Girar</button>
 
-  <script>
-    const wheel = document.getElementById('wheel');
-    const button = document.getElementById('spin');
+<h2 style="text-align:center;">🎯 Ruleta de Nombres 🎯</h2>
 
-    // Cambia este valor para amañar la ruleta
-    const sectorGanador = 3; // 0 = rojo, 1 = amarillo, ..., 5 = púrpura
+<div id="formulario">
+  <input type="text" id="nombre" placeholder="Escribe un nombre">
+  <button onclick="agregarNombre()">Agregar</button>
+  <button onclick="reiniciar()">Reiniciar</button>
+</div>
 
-    button.addEventListener('click', () => {
-      const vueltas = Math.floor(Math.random() * 2) + 5; // entre 5 y 6 vueltas
-      const gradosPorSector = 60;
-      const offset = 30; // mitad del sector
+<canvas id="ruleta" width="400" height="400"></canvas>
 
-      const anguloFinal = 360 * vueltas + (360 - (sectorGanador * gradosPorSector + offset));
-      wheel.style.transform = `rotate(${anguloFinal}deg)`;
-    });
-  </script>
+<div style="text-align:center;">
+  <button id="spinBtn" onclick="girarRuleta()">Girar</button>
+</div>
+
+<script>
+  const canvas = document.getElementById("ruleta");
+  const ctx = canvas.getContext("2d");
+  let nombres = [];
+  let anguloInicio = 0;
+  let girando = false;
+
+  function agregarNombre() {
+    const input = document.getElementById("nombre");
+    const nombre = input.value.trim();
+    if (nombre && !nombres.includes(nombre)) {
+      nombres.push(nombre);
+      input.value = '';
+      dibujarRuleta();
+    }
+  }
+
+  function reiniciar() {
+    nombres = [];
+    dibujarRuleta();
+  }
+
+  function dibujarRuleta() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (nombres.length === 0) return;
+
+    const numSectores = nombres.length;
+    const anguloPorSector = 2 * Math.PI / numSectores;
+
+    for (let i = 0; i < numSectores; i++) {
+      const angulo = anguloInicio + i * anguloPorSector;
+      ctx.beginPath();
+      ctx.moveTo(200, 200);
+      ctx.arc(200, 200, 200, angulo, angulo + anguloPorSector);
+      ctx.fillStyle = `hsl(${i * 360 / numSectores}, 70%, 60%)`;
+      ctx.fill();
+      ctx.stroke();
+
+      // Texto
+      ctx.save();
+      ctx.translate(200, 200);
+      ctx.rotate(angulo + anguloPorSector / 2);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#000";
+      ctx.font = "16px Arial";
+      ctx.fillText(nombres[i], 180, 5);
+      ctx.restore();
+    }
+
+    // Flecha
+    ctx.beginPath();
+    ctx.moveTo(200, 0);
+    ctx.lineTo(190, 20);
+    ctx.lineTo(210, 20);
+    ctx.closePath();
+    ctx.fillStyle = "#000";
+    ctx.fill();
+  }
+
+  function girarRuleta() {
+    if (girando || nombres.length === 0) return;
+    girando = true;
+
+    // Elegimos un índice aleatorio del ganador
+    const ganadorIndex = Math.floor(Math.random() * nombres.length);
+    const gradosPorSector = 360 / nombres.length;
+    const offset = gradosPorSector / 2;
+    const rotacionFinal = 360 * 5 + (360 - (ganadorIndex * gradosPorSector + offset));
+
+    let rotacion = 0;
+    const duracion = 4000;
+    const inicio = performance.now();
+
+    function animar(tiempo) {
+      const progreso = Math.min((tiempo - inicio) / duracion, 1);
+      rotacion = rotacionFinal * easeOutCubic(progreso);
+      anguloInicio = (rotacion * Math.PI / 180) % (2 * Math.PI);
+      dibujarRuleta();
+
+      if (progreso < 1) {
+        requestAnimationFrame(animar);
+      } else {
+        setTimeout(() => {
+          alert(`🎉 Ganador: ${nombres[ganadorIndex]} 🎉`);
+          nombres.splice(ganadorIndex, 1);
+          anguloInicio = 0;
+          girando = false;
+          dibujarRuleta();
+        }, 300);
+      }
+    }
+
+    requestAnimationFrame(animar);
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  dibujarRuleta();
+</script>
+
 </body>
 </html>
