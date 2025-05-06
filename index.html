@@ -3,76 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Name Picker</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Name Roulette</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Random Name Picker</h1>
+        <h1>Name Roulette</h1>
         
-        <!-- Admin access button - hidden in plain sight -->
         <div class="settings-icon" id="adminButton" title="Admin Settings">⚙️</div>
         
-        <p>Add names below (one per line) and click "Pick a Name"</p>
+        <div class="roulette-container">
+            <div class="roulette-wheel" id="rouletteWheel"></div>
+            <div class="roulette-center"></div>
+            <div class="roulette-pointer"></div>
+        </div>
         
         <textarea id="namesList" placeholder="Enter names, one per line..."></textarea>
         <div id="nameCountDisplay"></div>
         
-        <div>
-            <button id="pickButton">Pick a Name</button>
-            <button id="resetButton">Reset</button>
+        <div class="controls">
+            <button id="spinButton">SPIN</button>
+            <button id="resetButton">RESET</button>
         </div>
         
-        <div id="result">Names will appear here</div>
+        <div id="result">Ready to spin!</div>
         
         <div class="history">
-            <h3>Selection History</h3>
+            <h3>Previous Winners</h3>
             <div id="selectionHistory"></div>
         </div>
     </div>
     
-    <!-- Hidden admin panel -->
+    <!-- Admin Panel -->
     <div id="adminPanel">
         <div class="admin-panel-content">
             <h2>Admin Panel</h2>
             
             <div class="panel-section">
                 <label for="adminPassword">Admin Password:</label>
-                <input type="password" id="adminPassword" style="margin: 10px 0; padding: 8px; width: 100%;">
+                <input type="password" id="adminPassword">
                 <button id="setPasswordButton">Set Password</button>
-                <p id="passwordStatus" style="font-size: 14px; color: #7f8c8d;">No password set yet</p>
+                <p id="passwordStatus">No password set yet</p>
             </div>
             
             <div class="panel-section">
                 <h3>Predetermined Selection Sequence</h3>
                 <p>Enter names in the exact order you want them to be selected:</p>
-                <textarea id="sequenceList" style="height: 120px;" placeholder="Enter selection sequence, one name per line..."></textarea>
-                <p id="sequenceStatus" style="font-size: 14px; color: #7f8c8d;">No sequence set</p>
+                <textarea id="sequenceList" placeholder="Enter selection sequence..."></textarea>
+                <p id="sequenceStatus">No sequence set</p>
             </div>
             
             <div class="panel-section">
                 <h3>Selection Settings</h3>
-                <div style="margin: 10px 0;">
+                <div>
                     <label>
                         <input type="checkbox" id="useSequenceCheckbox" checked>
-                        Use predetermined sequence (uncheck for truly random selection)
+                        Use predetermined sequence
                     </label>
                 </div>
-                <div style="margin: 10px 0;">
-                    <label>
-                        <input type="checkbox" id="showAnimationCheckbox" checked>
-                        Show animation when picking a name
-                    </label>
-                </div>
-                <div style="margin: 10px 0;">
-                    <label>Current position in sequence: </label>
-                    <span id="currentPosition">0</span> / <span id="totalInSequence">0</span>
-                    <button id="resetSequenceButton" style="margin-left: 10px;">Reset Sequence</button>
+                <div>
+                    <label>Current position: <span id="currentPosition">0</span>/<span id="totalInSequence">0</span></label>
+                    <button id="resetSequenceButton">Reset Sequence</button>
                 </div>
             </div>
             
             <div class="panel-section">
-                <button id="exportDataButton">Export All Data</button>
+                <button id="exportDataButton">Export Data</button>
                 <button id="importDataButton">Import Data</button>
                 <input type="file" id="importFileInput" style="display: none;">
             </div>
