@@ -1,2 +1,54 @@
-<h1>Hola</h1>
-<b>Hola que tal</b>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ruleta Familiar</title>
+  <style>
+    #wheel {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 5px solid black;
+      margin: 50px auto;
+      background: conic-gradient(
+        red 0deg 60deg,
+        yellow 60deg 120deg,
+        blue 120deg 180deg,
+        green 180deg 240deg,
+        orange 240deg 300deg,
+        purple 300deg 360deg
+      );
+      transition: transform 4s ease-out;
+    }
+
+    #spin {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">🎉 ¡Gira la Ruleta Familiar! 🎉</h2>
+  <div id="wheel"></div>
+  <button id="spin">Girar</button>
+
+  <script>
+    const wheel = document.getElementById('wheel');
+    const button = document.getElementById('spin');
+
+    // Cambia este valor para amañar la ruleta
+    const sectorGanador = 3; // 0 = rojo, 1 = amarillo, ..., 5 = púrpura
+
+    button.addEventListener('click', () => {
+      const vueltas = Math.floor(Math.random() * 2) + 5; // entre 5 y 6 vueltas
+      const gradosPorSector = 60;
+      const offset = 30; // mitad del sector
+
+      const anguloFinal = 360 * vueltas + (360 - (sectorGanador * gradosPorSector + offset));
+      wheel.style.transform = `rotate(${anguloFinal}deg)`;
+    });
+  </script>
+</body>
+</html>
