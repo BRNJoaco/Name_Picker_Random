@@ -18,15 +18,16 @@
             <div class="roulette-pointer"></div>
         </div>
         
+        <div class="name-count" id="nameCountDisplay">0 names in wheel</div>
+        
         <textarea id="namesList" placeholder="Enter names, one per line..."></textarea>
-        <div id="nameCountDisplay"></div>
         
         <div class="controls">
-            <button id="spinButton">SPIN</button>
-            <button id="resetButton">RESET</button>
+            <button id="spinButton" class="spin-btn">SPIN</button>
+            <button id="resetButton" class="reset-btn">RESET</button>
         </div>
         
-        <div id="result">Ready to spin!</div>
+        <div id="result" class="winner-display">Ready to spin!</div>
         
         <div class="history">
             <h3>Previous Winners</h3>
@@ -34,45 +35,30 @@
         </div>
     </div>
     
-    <!-- Admin Panel -->
     <div id="adminPanel">
         <div class="admin-panel-content">
             <h2>Admin Panel</h2>
-            
             <div class="panel-section">
                 <label for="adminPassword">Admin Password:</label>
                 <input type="password" id="adminPassword">
                 <button id="setPasswordButton">Set Password</button>
                 <p id="passwordStatus">No password set yet</p>
             </div>
-            
             <div class="panel-section">
-                <h3>Predetermined Selection Sequence</h3>
-                <p>Enter names in the exact order you want them to be selected:</p>
+                <h3>Predetermined Sequence</h3>
                 <textarea id="sequenceList" placeholder="Enter selection sequence..."></textarea>
                 <p id="sequenceStatus">No sequence set</p>
             </div>
-            
             <div class="panel-section">
-                <h3>Selection Settings</h3>
-                <div>
-                    <label>
-                        <input type="checkbox" id="useSequenceCheckbox" checked>
-                        Use predetermined sequence
-                    </label>
-                </div>
-                <div>
-                    <label>Current position: <span id="currentPosition">0</span>/<span id="totalInSequence">0</span></label>
-                    <button id="resetSequenceButton">Reset Sequence</button>
-                </div>
+                <label><input type="checkbox" id="useSequenceCheckbox" checked> Use sequence</label>
+                <div>Position: <span id="currentPosition">0</span>/<span id="totalInSequence">0</span></div>
+                <button id="resetSequenceButton">Reset Sequence</button>
             </div>
-            
             <div class="panel-section">
                 <button id="exportDataButton">Export Data</button>
                 <button id="importDataButton">Import Data</button>
-                <input type="file" id="importFileInput" style="display: none;">
+                <input type="file" id="importFileInput" style="display:none">
             </div>
-            
             <button id="closeAdminButton">Close</button>
         </div>
     </div>

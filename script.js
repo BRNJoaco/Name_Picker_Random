@@ -93,24 +93,38 @@ function saveData() {
     localStorage.setItem('namePicker_useSequence', useSequence);
 }
 
-// Render the wheel
+// Render the wheel with clear segments
 function renderWheel() {
     rouletteWheel.innerHTML = '';
     wheelItems = [];
     
     if (displayNames.length === 0) {
         rouletteWheel.style.background = '#eee';
+        rouletteWheel.innerHTML = '<div class="empty-wheel">Add names to begin</div>';
         return;
     }
     
     const angle = 360 / displayNames.length;
+    const colors = ['#e74c3c', '#f39c12', '#f1c40f', '#2ecc71', '#1abc9c', '#3498db', '#9b59b6'];
     
+    // Create divider lines
+    for (let i = 0; i < displayNames.length; i++) {
+        const divider = document.createElement('div');
+        divider.className = 'wheel-divider';
+        divider.style.transform = `rotate(${angle * i}deg)`;
+        rouletteWheel.appendChild(divider);
+    }
+    
+    // Create name segments
     displayNames.forEach((name, index) => {
         const item = document.createElement('div');
         item.className = 'roulette-item';
-        item.textContent = name;
-        item.style.transform = `rotate(${angle * index}deg)`;
-        item.style.color = index % 2 === 0 ? 'white' : '#333';
+        item.textContent = name.length > 10 ? name.substring(0, 8) + '...' : name;
+        item.style.transform = `rotate(${angle * index + angle/2}deg)`;
+        item.style.color = 'white';
+        item.style.backgroundColor = colors[index % colors.length];
+        item.dataset.fullName = name;
+        
         rouletteWheel.appendChild(item);
         wheelItems.push(item);
     });
@@ -169,24 +183,39 @@ function spinWheel() {
     requestAnimationFrame(animateSpin);
 }
 
-// Finish spin
+// Finish spin animation
 function finishSpin(selectedIndex) {
     const selectedName = displayNames[selectedIndex];
     
+    // Highlight the winner
     wheelItems.forEach((item, index) => {
-        item.style.fontWeight = index === selectedIndex ? 'bold' : 'normal';
-        item.style.fontSize = index === selectedIndex ? '18px' : '14px';
+        if (index === selectedIndex) {
+            item.style.fontWeight = 'bold';
+            item.style.fontSize = '14px';
+            item.style.textDecoration = 'underline';
+        } else {
+            item.style.fontWeight = 'normal';
+            item.style.fontSize = '12px';
+            item.style.textDecoration = 'none';
+        }
     });
     
-    result.textContent = `Winner: ${selectedName}!`;
+    // Display winner
+    result.textContent = `WINNER: ${selectedName.toUpperCase()}!`;
     result.style.animation = 'none';
     void result.offsetWidth;
-    result.style.animation = 'flash 1s';
+    result.style.animation = 'pulse 2s infinite';
     
-    history.unshift(selectedName);
+    // Add to history
+    history.unshift({
+        name: selectedName,
+        time: new Date().toLocaleTimeString()
+    });
+    
     if (history.length > 10) history.pop();
     updateHistoryDisplay();
     
+    // Update sequence position
     if (useSequence) {
         currentIndex++;
         updateCurrentPosition();
@@ -200,7 +229,7 @@ function finishSpin(selectedIndex) {
 // Update functions
 function updateNameCount() {
     displayNames = namesList.value.split('\n').filter(name => name.trim() !== '');
-    nameCountDisplay.textContent = `${displayNames.length} names in the wheel`;
+    nameCountDisplay.textContent = `${displayNames.length} names in wheel`;
     renderWheel();
 }
 
@@ -218,8 +247,8 @@ function updateHistoryDisplay() {
         const historyItem = document.createElement('div');
         historyItem.className = 'history-item';
         historyItem.innerHTML = `
-            <span>${index + 1}. ${item}</span>
-            <small>${new Date().toLocaleTimeString()}</small>
+            <span>${index + 1}. ${item.name}</span>
+            <small>${item.time}</small>
         `;
         selectionHistory.appendChild(historyItem);
     });
@@ -235,6 +264,7 @@ function resetPicker() {
     history = [];
     updateHistoryDisplay();
     result.textContent = 'Ready to spin!';
+    result.style.animation = 'none';
     saveData();
 }
 
@@ -269,7 +299,7 @@ function setAdminPassword() {
     }
 }
 
-// Data import/export
+// Data export/import
 function exportData() {
     const data = {
         displayNames: namesList.value,
@@ -351,5 +381,5 @@ function setupEventListeners() {
     });
 }
 
-// Initialize
+// Initialize the app
 document.addEventListener('DOMContentLoaded', init);
