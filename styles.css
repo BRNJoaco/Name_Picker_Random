@@ -53,7 +53,43 @@ h1 {
         #9b59b6 90deg 105deg, #e74c3c 105deg 120deg
     );
 }
+/* Floating Winner Display */
+.floating-winner {
+    position: fixed;
+    z-index: 1000;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    opacity: 0;
+    transform: translateY(-50px);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
 
+/* Winner Highlight */
+.winner-highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px rgba(46, 204, 113, 0.8);
+    animation: pulse-border 2s infinite;
+    pointer-events: none;
+    z-index: 4;
+}
+
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 5px rgba(46, 204, 113, 0.8); }
+    50% { box-shadow: 0 0 0 15px rgba(46, 204, 113, 0.4); }
+    100% { box-shadow: 0 0 0 5px rgba(46, 204, 113, 0.8); }
+}
 .roulette-center {
     position: absolute;
     width: 50px;

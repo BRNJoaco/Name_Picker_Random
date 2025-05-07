@@ -98,6 +98,9 @@ function renderWheel() {
     rouletteWheel.innerHTML = '';
     wheelItems = [];
     
+    // Remove any existing winner highlights
+    document.querySelectorAll('.winner-highlight').forEach(el => el.remove());
+    
     if (displayNames.length === 0) {
         rouletteWheel.style.background = '#eee';
         rouletteWheel.innerHTML = '<div class="empty-wheel">Add names to begin</div>';
@@ -128,6 +131,11 @@ function renderWheel() {
         rouletteWheel.appendChild(item);
         wheelItems.push(item);
     });
+    
+    // Add winner highlight element
+    const highlight = document.createElement('div');
+    highlight.className = 'winner-highlight';
+    rouletteWheel.appendChild(highlight);
 }
 
 // Spin the wheel
@@ -187,20 +195,37 @@ function spinWheel() {
 function finishSpin(selectedIndex) {
     const selectedName = displayNames[selectedIndex];
     
-    // Highlight the winner
-    wheelItems.forEach((item, index) => {
-        if (index === selectedIndex) {
-            item.style.fontWeight = 'bold';
-            item.style.fontSize = '14px';
-            item.style.textDecoration = 'underline';
-        } else {
-            item.style.fontWeight = 'normal';
-            item.style.fontSize = '12px';
-            item.style.textDecoration = 'none';
-        }
+    // Reset all wheel items to normal state
+    wheelItems.forEach(item => {
+        item.style.fontWeight = 'normal';
+        item.style.fontSize = '12px';
+        item.style.textDecoration = 'none';
     });
     
-    // Display winner
+    // Highlight only the winner
+    const winnerItem = wheelItems[selectedIndex];
+    winnerItem.style.fontWeight = 'bold';
+    winnerItem.style.fontSize = '14px';
+    winnerItem.style.textDecoration = 'underline';
+    
+    // Create a floating winner display
+    const winnerDisplay = document.createElement('div');
+    winnerDisplay.className = 'floating-winner';
+    winnerDisplay.textContent = selectedName;
+    document.body.appendChild(winnerDisplay);
+    
+    // Position the display near the wheel
+    const wheelRect = rouletteWheel.getBoundingClientRect();
+    winnerDisplay.style.top = `${wheelRect.bottom + 20}px`;
+    winnerDisplay.style.left = `${wheelRect.left + wheelRect.width/2 - winnerDisplay.offsetWidth/2}px`;
+    
+    // Animate the display
+    setTimeout(() => {
+        winnerDisplay.style.opacity = '1';
+        winnerDisplay.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Display winner in result box
     result.textContent = `WINNER: ${selectedName.toUpperCase()}!`;
     result.style.animation = 'none';
     void result.offsetWidth;
@@ -224,6 +249,13 @@ function finishSpin(selectedIndex) {
     saveData();
     isSpinning = false;
     spinButton.disabled = false;
+    
+    // Remove floating winner after delay
+    setTimeout(() => {
+        winnerDisplay.style.opacity = '0';
+        winnerDisplay.style.transform = 'translateY(-20px)';
+        setTimeout(() => winnerDisplay.remove(), 500);
+    }, 3000);
 }
 
 // Update functions
