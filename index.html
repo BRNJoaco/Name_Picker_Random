@@ -5,81 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Name Picker</title>
     <style>
-        :root {
-            --primary-color: #3498db;
-            --primary-hover: #2980b9;
-            --header-color: #2c3e50;
-            --footer-color: #34495e;
-            --bg-gradient-start: #f5f7fa;
-            --bg-gradient-end: #c3cfe2;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-            color: #333;
-        }
-        
-        header {
-            background-color: var(--header-color);
-            color: white;
-            padding: 20px 0;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            background-color: #f5f5f5;
         }
-        
-        header h1 {
-            margin: 0;
-            font-size: 2.2em;
-        }
-        
-        header p {
-            margin: 5px 0 0;
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
         .container {
-            flex: 1;
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-        
-        .content-box {
             background-color: white;
             border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        
-        h2 {
-            color: var(--header-color);
-            margin-top: 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+        h1 {
+            color: #2c3e50;
         }
-        
         textarea {
             width: 100%;
             height: 150px;
             margin: 10px 0;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             resize: vertical;
-            font-family: inherit;
-            font-size: 14px;
         }
-        
         button {
-            background-color: var(--primary-color);
+            background-color: #3498db;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -87,78 +40,61 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s;
         }
-        
         button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: #2980b9;
         }
-        
         button.secondary {
             background-color: #95a5a6;
         }
-        
         button.secondary:hover {
             background-color: #7f8c8d;
         }
-        
         button.danger {
             background-color: #e74c3c;
         }
-        
         button.danger:hover {
             background-color: #c0392b;
         }
-        
         button.success {
             background-color: #2ecc71;
         }
-        
         button.success:hover {
             background-color: #27ae60;
         }
-        
         #result {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
-            margin: 25px 0;
-            padding: 20px;
-            border-radius: 8px;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
             background-color: #e8f4fc;
-            min-height: 70px;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px dashed #bdc3c7;
         }
-        
         .history {
-            margin-top: 30px;
+            margin-top: 20px;
             text-align: left;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #ddd;
             padding-top: 20px;
         }
-        
         .history-item {
-            padding: 8px 12px;
-            border-radius: 5px;
-            margin: 8px 0;
+            padding: 5px;
+            border-radius: 3px;
+            margin: 5px 0;
             background-color: #f9f9f9;
-            border-left: 4px solid var(--primary-color);
         }
-        
         .animate {
             animation: flash 1s;
         }
-        
         @keyframes flash {
             0% { background-color: #e8f4fc; }
-            50% { background-color: var(--primary-color); color: white; }
-            100% { background-color: #e8f4fc; color: inherit; }
+            50% { background-color: #3498db; }
+            100% { background-color: #e8f4fc; }
         }
-        
         .settings-icon {
             position: absolute;
             top: 20px;
@@ -166,14 +102,7 @@
             cursor: pointer;
             font-size: 24px;
             color: #7f8c8d;
-            transition: transform 0.3s;
         }
-        
-        .settings-icon:hover {
-            transform: rotate(45deg);
-            color: var(--primary-color);
-        }
-        
         #adminPanel {
             display: none;
             position: fixed;
@@ -181,250 +110,149 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0,0,0,0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
-        
         .admin-panel-content {
             background-color: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            width: 85%;
-            max-width: 650px;
-            max-height: 85vh;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
             overflow-y: auto;
-            position: relative;
         }
-        
         .panel-section {
             margin-bottom: 20px;
             padding-bottom: 20px;
             border-bottom: 1px solid #eee;
         }
-        
         #nameCountDisplay {
             margin: 10px 0;
             font-size: 14px;
             color: #7f8c8d;
         }
-        
         .toolbar {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
-            margin: 15px 0;
+            gap: 5px;
+            margin: 10px 0;
         }
-        
         .theme-selector {
             display: flex;
-            gap: 12px;
-            margin: 20px 0;
+            gap: 10px;
+            margin: 15px 0;
             justify-content: center;
         }
-        
         .theme-option {
-            width: 35px;
-            height: 35px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             cursor: pointer;
-            border: 3px solid transparent;
-            transition: transform 0.3s;
+            border: 2px solid transparent;
         }
-        
-        .theme-option:hover {
-            transform: scale(1.1);
-        }
-        
         .theme-option.selected {
-            border-color: var(--header-color);
-            transform: scale(1.1);
+            border-color: #2c3e50;
         }
-        
         .weight-input {
             width: 40px;
             margin-left: 5px;
             text-align: center;
-            padding: 3px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
         }
-        
         .group-controls {
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        
         .tab-container {
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        
         .tab-buttons {
             display: flex;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
         }
-        
         .tab-button {
-            padding: 10px 20px;
-            background-color: #f8f9fa;
+            padding: 8px 15px;
+            background-color: #ecf0f1;
             border: none;
             cursor: pointer;
             flex-grow: 1;
-            font-weight: bold;
-            color: #7f8c8d;
-            transition: all 0.3s;
         }
-        
         .tab-button.active {
-            background-color: white;
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
+            background-color: #3498db;
+            color: white;
         }
-        
         .tab-content {
             display: none;
-            animation: fadeIn 0.5s;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
         .tab-content.active {
             display: block;
-        }
-        
-        footer {
-            background-color: var(--footer-color);
-            color: white;
-            text-align: center;
-            padding: 15px 0;
-            margin-top: 40px;
-            font-size: 14px;
-        }
-        
-        footer a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        
-        footer a:hover {
-            text-decoration: underline;
-        }
-        
-        .logo {
-            font-weight: bold;
-            color: var(--primary-color);
-            font-size: 1.2em;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8em;
-            }
-            
-            .content-box {
-                padding: 15px;
-            }
-            
-            button {
-                padding: 8px 15px;
-                font-size: 14px;
-            }
-            
-            #result {
-                font-size: 24px;
-                padding: 15px;
-            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Random Name Picker</h1>
-            <p>Fair and transparent random selection tool for classrooms, meetings, and events</p>
-        </div>
-    </header>
-    
     <div class="container">
-        <div class="content-box">
-            <!-- Admin access button -->
-            <div class="settings-icon" id="adminButton" title="Admin Settings">⚙️</div>
+        <h1>Random Name Picker</h1>
+        
+        <!-- Admin access button - hidden in plain sight -->
+        <div class="settings-icon" id="adminButton" title="Admin Settings">⚙️</div>
+        
+        <p>Add names below (one per line) and click "Pick a Name"</p>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="main">Main List</button>
+                <button class="tab-button" data-tab="groups">Groups</button>
+            </div>
             
-            <h2>Name Selection</h2>
-            <p>Enter names below (one per line) and click "Pick a Name" for a fair random selection</p>
-            
-            <div class="tab-container">
-                <div class="tab-buttons">
-                    <button class="tab-button active" data-tab="main">Main List</button>
-                    <button class="tab-button" data-tab="groups">Groups</button>
-                </div>
+            <div class="tab-content active" id="main-tab">
+                <textarea id="namesList" placeholder="Enter names, one per line..."></textarea>
+                <div id="nameCountDisplay"></div>
                 
-                <div class="tab-content active" id="main-tab">
-                    <textarea id="namesList" placeholder="Example:
-John Smith
-Maria Garcia
-David Johnson
-..."></textarea>
-                    <div id="nameCountDisplay"></div>
-                    
-                    <div class="toolbar">
-                        <button id="removeDuplicates" class="secondary">Remove Duplicates</button>
-                        <button id="clearNames" class="secondary">Clear All Names</button>
-                        <button id="addWeights" class="secondary">Add Weights</button>
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="groups-tab">
-                    <div class="group-controls">
-                        <button id="addGroup" class="success">Add Group</button>
-                        <div id="groupsContainer"></div>
-                    </div>
+                <div class="toolbar">
+                    <button id="removeDuplicates" class="secondary">Remove Duplicates</button>
+                    <button id="clearNames" class="secondary">Clear All Names</button>
+                    <button id="addWeights" class="secondary">Add Weights</button>
                 </div>
             </div>
             
-            <div class="theme-selector">
-                <div class="theme-option selected" style="background-color: #3498db;" data-theme="default" title="Blue Theme"></div>
-                <div class="theme-option" style="background-color: #2ecc71;" data-theme="green" title="Green Theme"></div>
-                <div class="theme-option" style="background-color: #9b59b6;" data-theme="purple" title="Purple Theme"></div>
-                <div class="theme-option" style="background-color: #e74c3c;" data-theme="red" title="Red Theme"></div>
-                <div class="theme-option" style="background-color: #f39c12;" data-theme="orange" title="Orange Theme"></div>
+            <div class="tab-content" id="groups-tab">
+                <div class="group-controls">
+                    <button id="addGroup" class="success">Add Group</button>
+                    <div id="groupsContainer"></div>
+                </div>
             </div>
-            
-            <div class="toolbar">
-                <button id="pickButton">Pick a Name</button>
-                <button id="resetButton" class="secondary">Reset</button>
-                <button id="uniqueModeButton" class="secondary" title="Enable to never pick the same name twice">Unique Mode: OFF</button>
-            </div>
-            
-            <div id="result">Selected name will appear here</div>
-            
-            <div class="history">
-                <h3>Selection History</h3>
-                <div id="selectionHistory"></div>
-                <button id="clearHistory" class="danger">Clear History</button>
-            </div>
+        </div>
+        
+        <div class="theme-selector">
+            <div class="theme-option selected" style="background-color: #3498db;" data-theme="default"></div>
+            <div class="theme-option" style="background-color: #2ecc71;" data-theme="green"></div>
+            <div class="theme-option" style="background-color: #9b59b6;" data-theme="purple"></div>
+            <div class="theme-option" style="background-color: #e74c3c;" data-theme="red"></div>
+            <div class="theme-option" style="background-color: #f39c12;" data-theme="orange"></div>
+        </div>
+        
+        <div>
+            <button id="pickButton">Pick a Name</button>
+            <button id="resetButton" class="secondary">Reset</button>
+            <button id="uniqueModeButton" class="secondary" title="Enable to never pick the same name twice">Unique Mode: OFF</button>
+        </div>
+        
+        <div id="result">Names will appear here</div>
+        
+        <div class="history">
+            <h3>Selection History</h3>
+            <div id="selectionHistory"></div>
+            <button id="clearHistory" class="danger">Clear History</button>
         </div>
     </div>
-    
-    <footer>
-        <div class="container">
-            <p><span class="logo">Random Name Picker</span> &copy; 2023 | A fair and open-source selection tool</p>
-            <p>For use in classrooms, meetings, raffles, and other events requiring random selection</p>
-        </div>
-    </footer>
     
     <!-- Hidden admin panel -->
     <div id="adminPanel">
         <div class="admin-panel-content">
-            <h2>Administrator Panel</h2>
-            <p style="color: #7f8c8d; margin-top: -10px;">Advanced settings for the name picker</p>
+            <h2>Admin Panel</h2>
             
             <div class="panel-section">
                 <label for="adminPassword">Admin Password:</label>
@@ -467,7 +295,7 @@ David Johnson
                 <input type="file" id="importFileInput" style="display: none;">
             </div>
             
-            <button id="closeAdminButton" style="margin-top: 20px;">Close Admin Panel</button>
+            <button id="closeAdminButton">Close</button>
         </div>
     </div>
 
@@ -490,11 +318,11 @@ David Johnson
         
         // Theme colors
         const themes = {
-            'default': { primary: '#3498db', hover: '#2980b9', header: '#2c3e50', footer: '#34495e', bgStart: '#f5f7fa', bgEnd: '#c3cfe2' },
-            'green': { primary: '#2ecc71', hover: '#27ae60', header: '#27ae60', footer: '#16a085', bgStart: '#f1f8e9', bgEnd: '#dcedc8' },
-            'purple': { primary: '#9b59b6', hover: '#8e44ad', header: '#8e44ad', footer: '#6c3483', bgStart: '#f3e5f5', bgEnd: '#d1c4e9' },
-            'red': { primary: '#e74c3c', hover: '#c0392b', header: '#c0392b', footer: '#922b21', bgStart: '#ffebee', bgEnd: '#ffcdd2' },
-            'orange': { primary: '#f39c12', hover: '#e67e22', header: '#e67e22', footer: '#d35400', bgStart: '#fff3e0', bgEnd: '#ffe0b2' }
+            'default': { primary: '#3498db', hover: '#2980b9' },
+            'green': { primary: '#2ecc71', hover: '#27ae60' },
+            'purple': { primary: '#9b59b6', hover: '#8e44ad' },
+            'red': { primary: '#e74c3c', hover: '#c0392b' },
+            'orange': { primary: '#f39c12', hover: '#e67e22' }
         };
         
         // DOM elements
@@ -677,14 +505,8 @@ David Johnson
         // Apply theme colors
         function applyTheme(theme) {
             const colors = themes[theme] || themes['default'];
-            
-            // Update CSS variables
             document.documentElement.style.setProperty('--primary-color', colors.primary);
             document.documentElement.style.setProperty('--primary-hover', colors.hover);
-            document.documentElement.style.setProperty('--header-color', colors.header);
-            document.documentElement.style.setProperty('--footer-color', colors.footer);
-            document.documentElement.style.setProperty('--bg-gradient-start', colors.bgStart);
-            document.documentElement.style.setProperty('--bg-gradient-end', colors.bgEnd);
             
             // Update all buttons with primary color
             const primaryButtons = document.querySelectorAll('button:not(.secondary):not(.danger):not(.success)');
@@ -1085,4 +907,119 @@ David Johnson
             importFileInput.click();
         }
         
-        importFileInput
+        importFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.displayNames) namesList.value = data.displayNames;
+                    if (data.sequenceNames) sequenceList.value = data.sequenceNames;
+                    if (data.currentIndex !== undefined) currentIndex = data.currentIndex;
+                    if (data.history) history = data.history;
+                    if (data.useSequence !== undefined) {
+                        useSequence = data.useSequence;
+                        useSequenceCheckbox.checked = useSequence;
+                    }
+                    if (data.showAnimation !== undefined) {
+                        showAnimation = data.showAnimation;
+                        showAnimationCheckbox.checked = showAnimation;
+                    }
+                    if (data.uniqueMode !== undefined) {
+                        uniqueMode = data.uniqueMode;
+                        uniqueModeButton.textContent = `Unique Mode: ${uniqueMode ? 'ON' : 'OFF'}`;
+                        uniqueModeButton.classList.toggle('success', uniqueMode);
+                    }
+                    if (data.nameWeights) nameWeights = data.nameWeights;
+                    if (data.groups) groups = data.groups;
+                    if (data.currentGroup) currentGroup = data.currentGroup;
+                    if (data.theme) {
+                        currentTheme = data.theme;
+                        applyTheme(currentTheme);
+                        document.querySelector(`.theme-option[data-theme="${currentTheme}"]`).classList.add('selected');
+                    }
+                    
+                    updateNameCount();
+                    updateSequenceStatus();
+                    updateHistoryDisplay();
+                    updateCurrentPosition();
+                    renderGroups();
+                    saveData();
+                    
+                    alert('Data imported successfully!');
+                } catch (error) {
+                    alert('Error importing data: ' + error);
+                }
+            };
+            
+            reader.readAsText(file);
+        });
+        
+        // Event listeners
+        pickButton.addEventListener('click', pickName);
+        resetButton.addEventListener('click', resetPicker);
+        uniqueModeButton.addEventListener('click', toggleUniqueMode);
+        adminButton.addEventListener('click', toggleAdminPanel);
+        closeAdminButton.addEventListener('click', toggleAdminPanel);
+        setPasswordButton.addEventListener('click', setAdminPassword);
+        resetSequenceButton.addEventListener('click', resetSequence);
+        exportDataButton.addEventListener('click', exportData);
+        importDataButton.addEventListener('click', importData);
+        removeDuplicatesButton.addEventListener('click', removeDuplicates);
+        clearNamesButton.addEventListener('click', clearNames);
+        addWeightsButton.addEventListener('click', addWeightsToNames);
+        clearHistoryButton.addEventListener('click', clearHistory);
+        addGroupButton.addEventListener('click', addGroup);
+        
+        namesList.addEventListener('input', () => {
+            updateNameCount();
+        });
+        
+        sequenceList.addEventListener('input', () => {
+            updateSequenceStatus();
+        });
+        
+        useSequenceCheckbox.addEventListener('change', () => {
+            useSequence = useSequenceCheckbox.checked;
+            saveData();
+        });
+        
+        showAnimationCheckbox.addEventListener('change', () => {
+            showAnimation = showAnimationCheckbox.checked;
+            saveData();
+        });
+        
+        // Theme selection
+        themeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                themeOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                applyTheme(option.dataset.theme);
+            });
+        });
+        
+        // Tab switching
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                button.classList.add('active');
+                const tabId = button.dataset.tab + '-tab';
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadData);
+        
+        // Apply default theme
+        document.documentElement.style.setProperty('--primary-color', themes['default'].primary);
+        document.documentElement.style.setProperty('--primary-hover', themes['default'].hover);
+    </script>
+</body>
+</html>
