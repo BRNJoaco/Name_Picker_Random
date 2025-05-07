@@ -57,6 +57,7 @@ const tabButtons = document.querySelectorAll('.tab-button');
 const tabContents = document.querySelectorAll('.tab-content');
 const addGroupButton = document.getElementById('addGroup');
 const groupsContainer = document.getElementById('groupsContainer');
+const removeWinnerButton = document.getElementById('removeWinnerButton');
 
 // Load saved data from localStorage
 function loadData() {
@@ -207,7 +208,6 @@ function applyTheme(theme) {
     document.documentElement.style.setProperty('--primary-color', colors.primary);
     document.documentElement.style.setProperty('--primary-hover', colors.hover);
     
-    // Update all buttons with primary color
     const primaryButtons = document.querySelectorAll('button:not(.secondary):not(.danger):not(.success)');
     primaryButtons.forEach(button => {
         button.style.backgroundColor = colors.primary;
@@ -337,7 +337,6 @@ function parseNamesWithWeights() {
 
 // Weighted random selection
 function weightedRandomSelection(names, weights) {
-    // Create an array of cumulative weights
     const cumulativeWeights = [];
     let totalWeight = 0;
     
@@ -346,17 +345,14 @@ function weightedRandomSelection(names, weights) {
         cumulativeWeights.push(totalWeight);
     }
     
-    // Generate a random number between 0 and totalWeight
     const random = Math.random() * totalWeight;
     
-    // Find the first item where cumulative weight exceeds the random number
     for (let i = 0; i < cumulativeWeights.length; i++) {
         if (cumulativeWeights[i] > random) {
             return names[i];
         }
     }
     
-    // Fallback to last item (shouldn't normally happen)
     return names[names.length - 1];
 }
 
@@ -368,26 +364,21 @@ function pickName() {
     
     if (displayNames.length === 0) {
         result.textContent = 'Please add some names first!';
-        document.getElementById('removeWinnerButton').style.display = 'none';
+        removeWinnerButton.style.display = 'none';
         return;
     }
     
     if (uniqueMode && availableNames.length === 0) {
-        // In unique mode, if all names have been selected, reset available names
         resetAvailableNames();
     }
     
     let selectedName;
     let namesToUse = uniqueMode ? availableNames : displayNames;
     
-    // Determine which name to select
     if (useSequence && sequenceNames.length > 0 && currentIndex < sequenceNames.length) {
-        // Use the predetermined sequence if available and not exhausted
         selectedName = sequenceNames[currentIndex];
         
-        // Check if the name exists in the display list
         if (!namesToUse.includes(selectedName)) {
-            // Try to find a close match if the exact name isn't found
             const lowerSelectedName = selectedName.toLowerCase();
             const possibleMatch = namesToUse.find(name => 
                 name.toLowerCase() === lowerSelectedName);
@@ -395,38 +386,29 @@ function pickName() {
             if (possibleMatch) {
                 selectedName = possibleMatch;
             } else {
-                // Skip this name and move to the next one
                 currentIndex++;
                 saveData();
                 updateCurrentPosition();
-                // Try picking again
                 pickName();
                 return;
             }
         }
         
-        // Increment index if using sequence
         currentIndex++;
         updateCurrentPosition();
     } else {
-        // Use weighted random selection when sequence is exhausted or not used
         selectedName = weightedRandomSelection(namesToUse, nameWeights);
     }
     
-    // Store the winner and show remove button
     lastWinner = selectedName;
-    const removeButton = document.getElementById('removeWinnerButton');
-    removeButton.style.display = 'inline-block';
-    removeButton.textContent = `Remove "${selectedName}" from List`;
+    removeWinnerButton.style.display = 'none';
     
     if (showAnimation) {
-        // Show "random" animation
         isAnimating = true;
         let iterations = 0;
         const maxIterations = 20;
         
         const animationInterval = setInterval(() => {
-            // Display a random name during animation
             const randomIndex = Math.floor(Math.random() * namesToUse.length);
             result.textContent = namesToUse[randomIndex];
             
@@ -435,142 +417,91 @@ function pickName() {
             if (iterations >= maxIterations) {
                 clearInterval(animationInterval);
                 
-                // Show the selected name
                 result.textContent = selectedName;
                 result.classList.add('animate');
+                
                 setTimeout(() => {
                     result.classList.remove('animate');
+                    removeWinnerButton.style.display = 'inline-block';
+                    removeWinnerButton.textContent = `Remove "${selectedName}" from List`;
                 }, 1000);
                 
-                // Add to history
                 history.push(selectedName);
                 updateHistoryDisplay();
                 
-                // Remove from available names if in unique mode
                 if (uniqueMode) {
                     availableNames = availableNames.filter(name => name !== selectedName);
                 }
                 
-                // Save data
                 saveData();
-                
                 isAnimating = false;
             }
         }, 100);
     } else {
-        // No animation, just show the name
         result.textContent = selectedName;
         result.classList.add('animate');
+        
         setTimeout(() => {
             result.classList.remove('animate');
+            removeWinnerButton.style.display = 'inline-block';
+            removeWinnerButton.textContent = `Remove "${selectedName}" from List`;
         }, 1000);
         
-        // Add to history
         history.push(selectedName);
         updateHistoryDisplay();
         
-        // Remove from available names if in unique mode
         if (uniqueMode) {
             availableNames = availableNames.filter(name => name !== selectedName);
         }
         
-        // Save data
         saveData();
     }
 }
 
-// Function to remove the last winner from all lists
+// Remove winner from all lists
 function removeWinnerFromList() {
     if (!lastWinner) return;
     
-    // Remove from main names list
     let names = namesList.value.split('\n').filter(name => {
-        // Remove exact matches and matches with weights
         const baseName = name.replace(/\s*\(\d+\)$/, '').trim();
         return baseName !== lastWinner;
     });
     
     namesList.value = names.join('\n');
     
-    // Remove from sequence if it exists there
     if (sequenceNames.includes(lastWinner)) {
         sequenceNames = sequenceNames.filter(name => name !== lastWinner);
         sequenceList.value = sequenceNames.join('\n');
         updateSequenceStatus();
     }
     
-    // Remove from any groups
     for (const group in groups) {
         groups[group] = groups[group].filter(name => name !== lastWinner);
     }
     
-    // Remove from weights
     delete nameWeights[lastWinner];
     
-    // Update everything
     updateNameCount();
-    document.getElementById('removeWinnerButton').style.display = 'none';
+    removeWinnerButton.style.display = 'none';
     lastWinner = null;
     saveData();
     
-    // If we're in unique mode, reset available names
     if (uniqueMode) {
         resetAvailableNames();
     }
     
-    // Clear the result display
     result.textContent = 'Winner removed. Pick again!';
 }
 
-// Add event listener for the remove button
-document.getElementById('removeWinnerButton').addEventListener('click', removeWinnerFromList);
-// remove the last winner from the list
-function removeWinnerFromList() {
-    if (!lastWinner) return;
-    
-    // Remove from main names list
-    let names = namesList.value.split('\n').filter(name => {
-        // Remove exact matches and matches with weights
-        const baseName = name.replace(/\s*\(\d+\)$/, '').trim();
-        return baseName !== lastWinner;
-    });
-    
-    namesList.value = names.join('\n');
-    
-    // Remove from sequence if it exists there
-    if (sequenceNames.includes(lastWinner)) {
-        sequenceNames = sequenceNames.filter(name => name !== lastWinner);
-        sequenceList.value = sequenceNames.join('\n');
-        updateSequenceStatus();
-    }
-    
-    // Remove from any groups
-    for (const group in groups) {
-        groups[group] = groups[group].filter(name => name !== lastWinner);
-    }
-    
-    // Remove from weights
-    delete nameWeights[lastWinner];
-    
-    // Update everything
-    updateNameCount();
-    document.getElementById('removeWinnerButton').style.display = 'none';
-    lastWinner = null;
-    saveData();
-    
-    // If we're in unique mode, reset available names
-    if (uniqueMode) {
-        resetAvailableNames();
-    }
-}
 // Reset the picker
 function resetPicker() {
     history = [];
-    currentIndex = 0;  // Add this line to reset sequence position
+    currentIndex = 0;
     updateHistoryDisplay();
-    updateCurrentPosition();  // Add this line
+    updateCurrentPosition();
     result.textContent = 'Names will appear here';
     resetAvailableNames();
+    removeWinnerButton.style.display = 'none';
     saveData();
 }
 
@@ -625,7 +556,6 @@ function addGroup() {
 // Admin panel functions
 function toggleAdminPanel() {
     if (adminPassword && adminPanel.style.display !== 'flex') {
-        // Ask for password
         const enteredPassword = prompt('Enter admin password:');
         if (enteredPassword !== adminPassword) {
             alert('Incorrect password');
@@ -686,6 +616,60 @@ function importData() {
     importFileInput.click();
 }
 
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    document.documentElement.style.setProperty('--primary-color', themes['default'].primary);
+    document.documentElement.style.setProperty('--primary-hover', themes['default'].hover);
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+});
+
+pickButton.addEventListener('click', pickName);
+resetButton.addEventListener('click', resetPicker);
+uniqueModeButton.addEventListener('click', toggleUniqueMode);
+adminButton.addEventListener('click', toggleAdminPanel);
+closeAdminButton.addEventListener('click', toggleAdminPanel);
+setPasswordButton.addEventListener('click', setAdminPassword);
+resetSequenceButton.addEventListener('click', resetSequence);
+exportDataButton.addEventListener('click', exportData);
+importDataButton.addEventListener('click', importData);
+removeDuplicatesButton.addEventListener('click', removeDuplicates);
+clearNamesButton.addEventListener('click', clearNames);
+addWeightsButton.addEventListener('click', addWeightsToNames);
+clearHistoryButton.addEventListener('click', clearHistory);
+addGroupButton.addEventListener('click', addGroup);
+removeWinnerButton.addEventListener('click', removeWinnerFromList);
+
+namesList.addEventListener('input', updateNameCount);
+sequenceList.addEventListener('input', updateSequenceStatus);
+useSequenceCheckbox.addEventListener('change', () => {
+    useSequence = useSequenceCheckbox.checked;
+    saveData();
+});
+showAnimationCheckbox.addEventListener('change', () => {
+    showAnimation = showAnimationCheckbox.checked;
+    saveData();
+});
+
+themeOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        themeOptions.forEach(opt => opt.classList.remove('selected'));
+        option.classList.add('selected');
+        applyTheme(option.dataset.theme);
+    });
+});
+
+tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        button.classList.add('active');
+        const tabId = button.dataset.tab + '-tab';
+        document.getElementById(tabId).classList.add('active');
+    });
+});
+
 importFileInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -736,85 +720,4 @@ importFileInput.addEventListener('change', (event) => {
     };
     
     reader.readAsText(file);
-});
-
-// Event listeners
-pickButton.addEventListener('click', pickName);
-resetButton.addEventListener('click', resetPicker);
-uniqueModeButton.addEventListener('click', toggleUniqueMode);
-adminButton.addEventListener('click', toggleAdminPanel);
-closeAdminButton.addEventListener('click', toggleAdminPanel);
-setPasswordButton.addEventListener('click', setAdminPassword);
-resetSequenceButton.addEventListener('click', resetSequence);
-exportDataButton.addEventListener('click', exportData);
-importDataButton.addEventListener('click', importData);
-removeDuplicatesButton.addEventListener('click', removeDuplicates);
-clearNamesButton.addEventListener('click', clearNames);
-addWeightsButton.addEventListener('click', addWeightsToNames);
-clearHistoryButton.addEventListener('click', clearHistory);
-addGroupButton.addEventListener('click', addGroup);
-document.getElementById('removeWinnerButton').addEventListener('click', removeWinnerFromList);
-
-namesList.addEventListener('input', () => {
-    updateNameCount();
-});
-
-sequenceList.addEventListener('input', () => {
-    updateSequenceStatus();
-});
-
-useSequenceCheckbox.addEventListener('change', () => {
-    useSequence = useSequenceCheckbox.checked;
-    saveData();
-});
-
-showAnimationCheckbox.addEventListener('change', () => {
-    showAnimation = showAnimationCheckbox.checked;
-    saveData();
-});
-
-// Theme selection
-themeOptions.forEach(option => {
-    option.addEventListener('click', () => {
-        themeOptions.forEach(opt => opt.classList.remove('selected'));
-        option.classList.add('selected');
-        applyTheme(option.dataset.theme);
-    });
-});
-
-// Tab switching
-tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        
-        button.classList.add('active');
-        const tabId = button.dataset.tab + '-tab';
-        document.getElementById(tabId).classList.add('active');
-    });
-});
-
-// Load data when page loads
-document.addEventListener('DOMContentLoaded', loadData);
-
-// Apply default theme
-document.documentElement.style.setProperty('--primary-color', themes['default'].primary);
-document.documentElement.style.setProperty('--primary-hover', themes['default'].hover);
-// Update copyright year automatically
-document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-// Footer link functionality (placeholder - you can add real functionality)
-document.getElementById('privacyLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('Privacy policy would be displayed here.');
-});
-
-document.getElementById('termsLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('Terms of use would be displayed here.');
-});
-
-document.getElementById('contactLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('Contact information would be displayed here.');
 });
