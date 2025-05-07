@@ -375,6 +375,7 @@ function pickName() {
     let selectedName;
     let namesToUse = uniqueMode ? availableNames : displayNames;
     
+    // Determine which name to select
     if (useSequence && sequenceNames.length > 0 && currentIndex < sequenceNames.length) {
         selectedName = sequenceNames[currentIndex];
         
@@ -406,38 +407,69 @@ function pickName() {
     if (showAnimation) {
         isAnimating = true;
         let iterations = 0;
-        const maxIterations = 20;
+        // Random spin duration between 3-5 seconds (40-60 iterations)
+        const maxIterations = 40 + Math.floor(Math.random() * 20);
+        let animationSpeed = 80; // Start fast (80ms between changes)
+        let spinDirection = 1; // Used for back-and-forth effect
+        let lastIndex = -1;
         
-        const animationInterval = setInterval(() => {
-            const randomIndex = Math.floor(Math.random() * namesToUse.length);
-            result.textContent = namesToUse[randomIndex];
+        const spinInterval = setInterval(() => {
+            // Get a random name different from the last one shown
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * namesToUse.length);
+            } while (randomIndex === lastIndex && namesToUse.length > 1);
             
+            lastIndex = randomIndex;
+            result.textContent = namesToUse[randomIndex];
             iterations++;
             
-            if (iterations >= maxIterations) {
-                clearInterval(animationInterval);
-                
-                result.textContent = selectedName;
-                result.classList.add('animate');
-                
-                setTimeout(() => {
-                    result.classList.remove('animate');
-                    removeWinnerButton.style.display = 'inline-block';
-                    removeWinnerButton.textContent = `Remove "${selectedName}" from List`;
-                }, 1000);
-                
-                history.push(selectedName);
-                updateHistoryDisplay();
-                
-                if (uniqueMode) {
-                    availableNames = availableNames.filter(name => name !== selectedName);
-                }
-                
-                saveData();
-                isAnimating = false;
+            // Gradually slow down the animation (deceleration effect)
+            if (iterations > maxIterations * 0.7) {
+                animationSpeed = 120; // Slow down phase 1
             }
-        }, 100);
+            if (iterations > maxIterations * 0.85) {
+                animationSpeed = 200; // Slow down phase 2
+            }
+            if (iterations > maxIterations * 0.95) {
+                animationSpeed = 300; // Final slow down
+            }
+            
+            // Occasionally reverse direction for more realism
+            if (Math.random() < 0.1) {
+                spinDirection *= -1;
+            }
+            
+            if (iterations >= maxIterations) {
+                clearInterval(spinInterval);
+                
+                // Final reveal with dramatic pause
+                setTimeout(() => {
+                    result.textContent = selectedName;
+                    result.classList.add('animate');
+                    
+                    // Show remove button after highlight animation
+                    setTimeout(() => {
+                        result.classList.remove('animate');
+                        removeWinnerButton.style.display = 'inline-block';
+                        removeWinnerButton.textContent = `Remove "${selectedName}" from List`;
+                    }, 1000);
+                    
+                    // Update history and states
+                    history.push(selectedName);
+                    updateHistoryDisplay();
+                    
+                    if (uniqueMode) {
+                        availableNames = availableNames.filter(name => name !== selectedName);
+                    }
+                    
+                    saveData();
+                    isAnimating = false;
+                }, 200); // Additional pause before final reveal
+            }
+        }, animationSpeed);
     } else {
+        // Non-animated version
         result.textContent = selectedName;
         result.classList.add('animate');
         
