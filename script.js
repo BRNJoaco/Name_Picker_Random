@@ -593,17 +593,40 @@ function addGroup() {
 
 // Admin panel functions
 function toggleAdminPanel() {
-    if (adminPassword && adminPanel.style.display !== 'flex') {
-        const enteredPassword = prompt('Enter admin password:');
-        if (enteredPassword !== adminPassword) {
-            alert('Incorrect password');
+    const panel = document.getElementById('adminPanel');
+    if (!panel) {
+        console.error("Admin panel element not found!");
+        return;
+    }
+    
+    // If panel is hidden and password is set, ask for password
+    if (panel.style.display !== 'flex' && adminPassword) {
+        const password = prompt("Enter admin password:");
+        if (password !== adminPassword) {
+            alert("Incorrect password");
             return;
         }
     }
     
-    adminPanel.style.display = adminPanel.style.display === 'flex' ? 'none' : 'flex';
+    // Toggle visibility
+    panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
 }
 
+function initAdminPanel() {
+    const adminButton = document.getElementById('adminButton');
+    const closeButton = document.getElementById('closeAdminButton');
+    
+    if (!adminButton || !closeButton) {
+        console.error("Admin panel controls not found!");
+        return;
+    }
+    
+    adminButton.addEventListener('click', toggleAdminPanel);
+    closeButton.addEventListener('click', toggleAdminPanel);
+    
+    // Initialize panel as hidden
+    document.getElementById('adminPanel').style.display = 'none';
+}
 function setAdminPassword() {
     const newPassword = adminPasswordInput.value.trim();
     if (newPassword) {
@@ -662,6 +685,7 @@ function openNewWindow() {
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     loadData();
+    initAdminPanel();
     document.documentElement.style.setProperty('--primary-color', themes['default'].primary);
     document.documentElement.style.setProperty('--primary-hover', themes['default'].hover);
     document.getElementById('currentYear').textContent = new Date().getFullYear();
