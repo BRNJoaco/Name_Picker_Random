@@ -17,10 +17,12 @@
     </header>
 
     <div class="container">
-        <!-- Admin access button - hidden in plain sight -->
-        <div class="settings-icon" id="adminButton" title="Admin Settings">⚙️</div>
+        <div class="session-controls">
+            <button id="newWindowButton" class="secondary">Open New Independent Window</button>
+            <span id="sessionStatus">Session: New</span>
+        </div>
         
-        <p class="instruction">Add names below (one per line) and click "Pick a Name"</p>
+        <p class="instruction">Add names below (one per line) - edits here won't affect other windows</p>
         
         <div class="tab-container">
             <div class="tab-buttons">

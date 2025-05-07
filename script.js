@@ -58,21 +58,27 @@ const tabContents = document.querySelectorAll('.tab-content');
 const addGroupButton = document.getElementById('addGroup');
 const groupsContainer = document.getElementById('groupsContainer');
 const removeWinnerButton = document.getElementById('removeWinnerButton');
+const newWindowButton = document.getElementById('newWindowButton');
+const sessionStatus = document.getElementById('sessionStatus');
 
-// Load saved data from localStorage
+// Generate a unique session ID for this window
+const sessionId = 'window_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+sessionStatus.textContent = `Session: ${sessionId.substr(0, 10)}...`;
+
+// Load saved data from sessionStorage
 function loadData() {
-    const savedNames = localStorage.getItem('namePicker_names');
-    const savedSequence = localStorage.getItem('namePicker_sequence');
-    const savedIndex = localStorage.getItem('namePicker_currentIndex');
-    const savedHistory = localStorage.getItem('namePicker_history');
-    const savedPassword = localStorage.getItem('namePicker_adminPassword');
-    const savedUseSequence = localStorage.getItem('namePicker_useSequence');
-    const savedShowAnimation = localStorage.getItem('namePicker_showAnimation');
-    const savedUniqueMode = localStorage.getItem('namePicker_uniqueMode');
-    const savedNameWeights = localStorage.getItem('namePicker_nameWeights');
-    const savedGroups = localStorage.getItem('namePicker_groups');
-    const savedCurrentGroup = localStorage.getItem('namePicker_currentGroup');
-    const savedTheme = localStorage.getItem('namePicker_theme');
+    const savedNames = sessionStorage.getItem('namePicker_names');
+    const savedSequence = sessionStorage.getItem('namePicker_sequence');
+    const savedIndex = sessionStorage.getItem('namePicker_currentIndex');
+    const savedHistory = sessionStorage.getItem('namePicker_history');
+    const savedPassword = sessionStorage.getItem('namePicker_adminPassword');
+    const savedUseSequence = sessionStorage.getItem('namePicker_useSequence');
+    const savedShowAnimation = sessionStorage.getItem('namePicker_showAnimation');
+    const savedUniqueMode = sessionStorage.getItem('namePicker_uniqueMode');
+    const savedNameWeights = sessionStorage.getItem('namePicker_nameWeights');
+    const savedGroups = sessionStorage.getItem('namePicker_groups');
+    const savedCurrentGroup = sessionStorage.getItem('namePicker_currentGroup');
+    const savedTheme = sessionStorage.getItem('namePicker_theme');
     
     if (savedNames) {
         namesList.value = savedNames;
@@ -140,20 +146,20 @@ function loadData() {
     resetAvailableNames();
 }
 
-// Save data to localStorage
+// Save data to sessionStorage
 function saveData() {
-    localStorage.setItem('namePicker_names', namesList.value);
-    localStorage.setItem('namePicker_sequence', sequenceList.value);
-    localStorage.setItem('namePicker_currentIndex', currentIndex);
-    localStorage.setItem('namePicker_history', JSON.stringify(history));
-    localStorage.setItem('namePicker_adminPassword', adminPassword);
-    localStorage.setItem('namePicker_useSequence', useSequence);
-    localStorage.setItem('namePicker_showAnimation', showAnimation);
-    localStorage.setItem('namePicker_uniqueMode', uniqueMode);
-    localStorage.setItem('namePicker_nameWeights', JSON.stringify(nameWeights));
-    localStorage.setItem('namePicker_groups', JSON.stringify(groups));
-    localStorage.setItem('namePicker_currentGroup', currentGroup);
-    localStorage.setItem('namePicker_theme', currentTheme);
+    sessionStorage.setItem('namePicker_names', namesList.value);
+    sessionStorage.setItem('namePicker_sequence', sequenceList.value);
+    sessionStorage.setItem('namePicker_currentIndex', currentIndex);
+    sessionStorage.setItem('namePicker_history', JSON.stringify(history));
+    sessionStorage.setItem('namePicker_adminPassword', adminPassword);
+    sessionStorage.setItem('namePicker_useSequence', useSequence);
+    sessionStorage.setItem('namePicker_showAnimation', showAnimation);
+    sessionStorage.setItem('namePicker_uniqueMode', uniqueMode);
+    sessionStorage.setItem('namePicker_nameWeights', JSON.stringify(nameWeights));
+    sessionStorage.setItem('namePicker_groups', JSON.stringify(groups));
+    sessionStorage.setItem('namePicker_currentGroup', currentGroup);
+    sessionStorage.setItem('namePicker_theme', currentTheme);
 }
 
 // Update the name count display
@@ -648,6 +654,11 @@ function importData() {
     importFileInput.click();
 }
 
+// Open new independent window
+function openNewWindow() {
+    window.open(window.location.href, '_blank');
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     loadData();
@@ -671,6 +682,7 @@ addWeightsButton.addEventListener('click', addWeightsToNames);
 clearHistoryButton.addEventListener('click', clearHistory);
 addGroupButton.addEventListener('click', addGroup);
 removeWinnerButton.addEventListener('click', removeWinnerFromList);
+newWindowButton.addEventListener('click', openNewWindow);
 
 namesList.addEventListener('input', updateNameCount);
 sequenceList.addEventListener('input', updateSequenceStatus);
