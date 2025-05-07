@@ -13,6 +13,7 @@ let nameWeights = {};
 let groups = {};
 let currentGroup = null;
 let currentTheme = 'default';
+let lastWinner = null;
 
 // Theme colors
 const themes = {
@@ -367,25 +368,21 @@ function pickName() {
     
     if (displayNames.length === 0) {
         result.textContent = 'Please add some names first!';
+        document.getElementById('removeWinnerButton').style.display = 'none';
         return;
     }
     
     if (uniqueMode && availableNames.length === 0) {
-        result.textContent = 'All names have been selected!';
-        return;
+        // In unique mode, if all names have been selected, reset available names
+        resetAvailableNames();
     }
     
     let selectedName;
     let namesToUse = uniqueMode ? availableNames : displayNames;
     
     // Determine which name to select
-    if (useSequence && sequenceNames.length > 0) {
-        // Use the predetermined sequence if available
-        if (currentIndex >= sequenceNames.length) {
-            result.textContent = 'All names in the sequence have been selected!';
-            return;
-        }
-        
+    if (useSequence && sequenceNames.length > 0 && currentIndex < sequenceNames.length) {
+        // Use the predetermined sequence if available and not exhausted
         selectedName = sequenceNames[currentIndex];
         
         // Check if the name exists in the display list
@@ -407,10 +404,20 @@ function pickName() {
                 return;
             }
         }
+        
+        // Increment index if using sequence
+        currentIndex++;
+        updateCurrentPosition();
     } else {
-        // Use weighted random selection
+        // Use weighted random selection when sequence is exhausted or not used
         selectedName = weightedRandomSelection(namesToUse, nameWeights);
     }
+    
+    // Store the winner and show remove button
+    lastWinner = selectedName;
+    const removeButton = document.getElementById('removeWinnerButton');
+    removeButton.style.display = 'inline-block';
+    removeButton.textContent = `Remove "${selectedName}" from List`;
     
     if (showAnimation) {
         // Show "random" animation
@@ -444,12 +451,6 @@ function pickName() {
                     availableNames = availableNames.filter(name => name !== selectedName);
                 }
                 
-                // Increment index if using sequence
-                if (useSequence) {
-                    currentIndex++;
-                    updateCurrentPosition();
-                }
-                
                 // Save data
                 saveData();
                 
@@ -473,21 +474,101 @@ function pickName() {
             availableNames = availableNames.filter(name => name !== selectedName);
         }
         
-        // Increment index if using sequence
-        if (useSequence) {
-            currentIndex++;
-            updateCurrentPosition();
-        }
-        
         // Save data
         saveData();
     }
 }
 
+// Function to remove the last winner from all lists
+function removeWinnerFromList() {
+    if (!lastWinner) return;
+    
+    // Remove from main names list
+    let names = namesList.value.split('\n').filter(name => {
+        // Remove exact matches and matches with weights
+        const baseName = name.replace(/\s*\(\d+\)$/, '').trim();
+        return baseName !== lastWinner;
+    });
+    
+    namesList.value = names.join('\n');
+    
+    // Remove from sequence if it exists there
+    if (sequenceNames.includes(lastWinner)) {
+        sequenceNames = sequenceNames.filter(name => name !== lastWinner);
+        sequenceList.value = sequenceNames.join('\n');
+        updateSequenceStatus();
+    }
+    
+    // Remove from any groups
+    for (const group in groups) {
+        groups[group] = groups[group].filter(name => name !== lastWinner);
+    }
+    
+    // Remove from weights
+    delete nameWeights[lastWinner];
+    
+    // Update everything
+    updateNameCount();
+    document.getElementById('removeWinnerButton').style.display = 'none';
+    lastWinner = null;
+    saveData();
+    
+    // If we're in unique mode, reset available names
+    if (uniqueMode) {
+        resetAvailableNames();
+    }
+    
+    // Clear the result display
+    result.textContent = 'Winner removed. Pick again!';
+}
+
+// Add event listener for the remove button
+document.getElementById('removeWinnerButton').addEventListener('click', removeWinnerFromList);
+// remove the last winner from the list
+function removeWinnerFromList() {
+    if (!lastWinner) return;
+    
+    // Remove from main names list
+    let names = namesList.value.split('\n').filter(name => {
+        // Remove exact matches and matches with weights
+        const baseName = name.replace(/\s*\(\d+\)$/, '').trim();
+        return baseName !== lastWinner;
+    });
+    
+    namesList.value = names.join('\n');
+    
+    // Remove from sequence if it exists there
+    if (sequenceNames.includes(lastWinner)) {
+        sequenceNames = sequenceNames.filter(name => name !== lastWinner);
+        sequenceList.value = sequenceNames.join('\n');
+        updateSequenceStatus();
+    }
+    
+    // Remove from any groups
+    for (const group in groups) {
+        groups[group] = groups[group].filter(name => name !== lastWinner);
+    }
+    
+    // Remove from weights
+    delete nameWeights[lastWinner];
+    
+    // Update everything
+    updateNameCount();
+    document.getElementById('removeWinnerButton').style.display = 'none';
+    lastWinner = null;
+    saveData();
+    
+    // If we're in unique mode, reset available names
+    if (uniqueMode) {
+        resetAvailableNames();
+    }
+}
 // Reset the picker
 function resetPicker() {
     history = [];
+    currentIndex = 0;  // Add this line to reset sequence position
     updateHistoryDisplay();
+    updateCurrentPosition();  // Add this line
     result.textContent = 'Names will appear here';
     resetAvailableNames();
     saveData();
@@ -672,6 +753,7 @@ clearNamesButton.addEventListener('click', clearNames);
 addWeightsButton.addEventListener('click', addWeightsToNames);
 clearHistoryButton.addEventListener('click', clearHistory);
 addGroupButton.addEventListener('click', addGroup);
+document.getElementById('removeWinnerButton').addEventListener('click', removeWinnerFromList);
 
 namesList.addEventListener('input', () => {
     updateNameCount();
@@ -718,3 +800,21 @@ document.addEventListener('DOMContentLoaded', loadData);
 // Apply default theme
 document.documentElement.style.setProperty('--primary-color', themes['default'].primary);
 document.documentElement.style.setProperty('--primary-hover', themes['default'].hover);
+// Update copyright year automatically
+document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+// Footer link functionality (placeholder - you can add real functionality)
+document.getElementById('privacyLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Privacy policy would be displayed here.');
+});
+
+document.getElementById('termsLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Terms of use would be displayed here.');
+});
+
+document.getElementById('contactLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Contact information would be displayed here.');
+});

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+    <body style="background-color:black;">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +9,18 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header class="site-header">
+        <div class="header-content">
+            <h1>Random Name Picker</h1>
+            <p class="subtitle">Fair and unbiased selection tool</p>
+        </div>
+    </header>
+
     <div class="container">
-        <h1>Random Name Picker</h1>
-        
         <!-- Admin access button - hidden in plain sight -->
         <div class="settings-icon" id="adminButton" title="Admin Settings">⚙️</div>
         
-        <p>Add names below (one per line) and click "Pick a Name"</p>
+        <p class="instruction">Add names below (one per line) and click "Pick a Name"</p>
         
         <div class="tab-container">
             <div class="tab-buttons">
@@ -55,7 +62,7 @@
         </div>
         
         <div id="result">Names will appear here</div>
-        
+        <button id="removeWinnerButton" class="danger" style="display: none;">Remove Winner from List</button>
         <div class="history">
             <h3>Selection History</h3>
             <div id="selectionHistory"></div>
@@ -112,7 +119,16 @@
             <button id="closeAdminButton">Close</button>
         </div>
     </div>
-
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>© <span id="currentYear"></span> Random Name Picker | Designed for fair selections</p>
+            <div class="footer-links">
+                <a href="#" id="privacyLink">Privacy Policy</a>
+                <a href="#" id="termsLink">Terms of Use</a>
+                <a href="#" id="contactLink">Contact</a>
+            </div>
+        </div>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>

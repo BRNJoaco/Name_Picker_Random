@@ -183,3 +183,76 @@ button.success:hover {
 .tab-content.active {
     display: block;
 }
+.site-header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 2rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: white;
+}
+
+.subtitle {
+    margin: 0.5rem 0 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Footer Styles */
+.site-footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1.5rem 0;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.site-footer p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    margin-top: 1rem;
+}
+
+.footer-links a {
+    color: #ecf0f1;
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+    color: #3498db;
+}
+
+/* Instruction text */
+.instruction {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+#removeWinnerButton {
+    margin-top: 10px;
+    padding: 8px 15px;
+    font-size: 14px;
+}
